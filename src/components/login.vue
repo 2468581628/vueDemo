@@ -28,16 +28,22 @@ export default {
     created() {},
     methods: {
         onSubmit() {
-            this.$axios({
-                method:'post',
-                url:'api/Login/Login',
-                data: this.form
-            }).then(response=>{
-                // console.log(response)
+            this.$axios.post('api/Login/Login',this.form).then(response=>{
+                console.log(response)
+                debugger
                 sessionStorage.setItem("Authorization",response.data.token)
-                // sessionStorage.setItem("key",response.data.token)
-                this.$router.push("/")
+                this.$router.push(router.currentRoute.fullPath)
             })
+            // this.$axios({
+            //     method:'post',
+            //     url:'api/Login/Login',
+            //     data: this.form
+            // }).then(response=>{
+            //     // console.log(response)
+            //     sessionStorage.setItem("Authorization",response.data.token)
+            //     // sessionStorage.setItem("key",response.data.token)
+            //     this.$router.push("/")
+            // })
         }
     }
 }

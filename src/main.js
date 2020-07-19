@@ -38,3 +38,47 @@ axios.interceptors.request.use(
   error => {
     return Promise.reject(error);
   });
+
+ 
+  axios.interceptors.response.use(
+    response => {
+      if (response.status === 200) {
+        debugger
+        return Promise.resolve(response)
+      } else {
+        return Promise.reject(response)
+      }
+    },
+    // 服务器状态码不是200的情况
+    error => {
+      if (error.response.status) {
+        switch (error.response.status) {
+          case 401:
+            router.replace({
+              path: '/login',
+              query: { redirect: router.currentRoute.fullPath }
+            })
+            break
+          case 403:
+            this.$message.error('登录过期，请重新登录')
+            sessionStorage.removeItem('token')
+            setTimeout(() => {
+              router.replace({
+                path: '/login',
+                query: {
+                  redirect: router.currentRoute.fullPath
+                }
+              })
+            }, 1000)
+            break
+          case 404:
+            this.$message.error('网络请求不存在')
+            break
+          // 其他错误，直接抛出错误提示
+          default:
+            this.$message.error(error.response.data.message)
+        }
+        return Promise.reject(error.response)
+      }
+    }
+  )
